@@ -10,7 +10,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(body_parser.json());
-
+// Request to add todo
 app.post('/todos', (requset, response) => {
   var newToDo = new Todo({
     text: requset.body.text
@@ -22,7 +22,7 @@ app.post('/todos', (requset, response) => {
   });
   console.log(requset.body);
 });
-
+// Request to retrive todo
 app.get('/todos', (req, res) => {
   Todo.find().then((todos) => {
     res.send({todos});
@@ -30,7 +30,7 @@ app.get('/todos', (req, res) => {
     res.status(400).send(e);
   });
 })
-
+// Request to retrive todo by id
 app.get('/todos/:id', (req, res) => {
   var _id = req.params.id;
   if(ObjectID.isValid(_id)){
@@ -44,7 +44,20 @@ app.get('/todos/:id', (req, res) => {
     res.status(404).send({});
   }
 });
-
+// Request to delete todo by id
+app.delete('/todos/:id', (req, res) => {
+  var _id = req.params.id;
+  if(ObjectID.isValid(_id)){
+    Todo.findByIdAndRemove(_id).then((todo) => {
+      todo && res.send(todo);
+      !todo && res.status(404).send({error:`Unable to find TODO By ID ${_id}`});
+    }).catch((err) => {
+      res.status(404).send();
+    });
+  } else {
+    res.status(400).send({error:"Invalid Request"});
+  }
+});
 app.listen(port, () => {
   console.log(`Started up at ${port}`);
 });
