@@ -1,11 +1,12 @@
 const {mongoose} = require('./db/mongooseDB');
 const {Todo} = require('./models/todo');
-const {UserCollection} = require('./models/userData');
+const {user} = require('./models/userData');
 
-const express = require('express');
-const body_parser = require('body-parser');
-const {ObjectID} = require('mongodb');
-const _ = require('lodash');
+const express = require('express');// Widely used for creating the routes
+const body_parser = require('body-parser'); // To parse the request of the body
+const {ObjectID} = require('mongodb'); // Mostly useful for validating the object IDS
+const _ = require('lodash'); // Commonly used library for common UTILS functions check it on npm libararies page for all the functions
+const jwt = require('jsonwebtoken');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -80,6 +81,20 @@ app.patch('/todos/:id',(req, res) => {
     !todo && res.status(404).send();
   }).catch((err) => {
     res.status(404).send();
+  });
+});
+// USer Routes
+// SignUp New USer Routes
+app.post('/signup', (req, res) => {
+  let userData = _.pick(req.body, ['email','password']);
+  let newUser = new user(userData);
+  newUser.save().then(() => {
+    return newUser.generateAuthToken();
+  }).then((token) => {
+    res.header('x-auth', token).send(newUser);
+  })
+  .catch((err) => {
+    res.status(400).send(err);
   });
 });
 app.listen(port, () => {
