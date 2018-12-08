@@ -1,6 +1,7 @@
 const {mongoose} = require('./db/mongooseDB');
 const {Todo} = require('./models/todo');
 const {user} = require('./models/userData');
+const {authenticateUser} = require('./middleware/authenticate');
 
 const express = require('express');// Widely used for creating the routes
 const body_parser = require('body-parser'); // To parse the request of the body
@@ -97,6 +98,11 @@ app.post('/signup', (req, res) => {
     res.status(400).send(err);
   });
 });
+
+app.get('/user', authenticateUser, (req, res) => {
+  res.send(req.user);
+});
+
 app.listen(port, () => {
   console.log(`Started up at ${port}`);
 });
