@@ -8,6 +8,7 @@ const body_parser = require('body-parser'); // To parse the request of the body
 const {ObjectID} = require('mongodb'); // Mostly useful for validating the object IDS
 const _ = require('lodash'); // Commonly used library for common UTILS functions check it on npm libararies page for all the functions
 // const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -101,6 +102,18 @@ app.post('/signup', (req, res) => {
 
 app.get('/user', authenticateUser, (req, res) => {
   res.send(req.user);
+});
+
+app.post('/login', (req, res) => {
+  let userData = _.pick(req.body, ['email','password']);
+
+  user.findByCredentials(userData.email, userData.password).then((user) => {
+    return user.generateAuthToken().then((token) => {
+      res.header('x-auth', token).send(user);  
+    })
+  }).catch((err) => {
+    res.status(400).send();
+  });
 });
 
 app.listen(port, () => {

@@ -67,6 +67,27 @@ UserSchema.statics.findByToken = function (token) {
     'tokens.token': token,
     'tokens.access': 'auth'
   });
+}
+UserSchema.statics.findByCredentials = function (email, password) {
+  var User = this;
+  return User.findOne({email}).then((tempUser) => {
+    if(!tempUser){
+      return Promise.reject();
+    }
+    return new Promise((resolve, reject) => {
+      let hashedPassword = tempUser.password;
+      bcrypt.compare(password, hashedPassword, (err, succ) => {
+        if(succ){
+          resolve(tempUser);
+        } else {
+          reject();
+        }
+      })
+    });
+    
+  }).catch((err) => {
+    res.status(401).send();
+  });
 } 
 // The function written below is a Mongoose Middleware you can learn more about this in npm mongoose libraby search mongoose middleware
 UserSchema.pre('save', function(next) {
