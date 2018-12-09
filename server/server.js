@@ -7,7 +7,7 @@ const express = require('express');// Widely used for creating the routes
 const body_parser = require('body-parser'); // To parse the request of the body
 const {ObjectID} = require('mongodb'); // Mostly useful for validating the object IDS
 const _ = require('lodash'); // Commonly used library for common UTILS functions check it on npm libararies page for all the functions
-const jwt = require('jsonwebtoken');
+// const jwt = require('jsonwebtoken');
 
 const app = express();
 const port = process.env.PORT || 3000;
